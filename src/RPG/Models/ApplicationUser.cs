@@ -11,6 +11,6 @@ namespace RPG.Models
     public class ApplicationUser : IdentityUser
      
     {
-       
+       //Create new table called Users with column for ApplicationUserID (one-one)
     }
 }
