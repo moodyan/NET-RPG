@@ -11,25 +11,31 @@ namespace RPG.Models
 {
     public class RPGDbContext : IdentityDbContext<ApplicationUser>
     {
+        public RPGDbContext() { }
+        public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+        public DbSet<Item> Items { get; set; }
+        public DbSet<Location> Locations { get; set; }
+        public DbSet<UserItem> UserItems { get; set; }
         public RPGDbContext(DbContextOptions options) : base(options)
         {
 
         }
-        public DbSet<Item> Items { get; set; }
-        public DbSet<Location> Locations { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            builder.Entity<UserItem>()
+                .HasKey(ui => new { ui.ApplicationUserId, ui.ItemId });
+
+            builder.Entity<UserItem>()
+                .HasOne(ui => ui.ApplicationUser)
+                .WithMany(u => u.UserItems)
+                .HasForeignKey(ui => ui.ApplicationUserId);
+
+            builder.Entity<UserItem>()
+                .HasOne(ui => ui.Item)
+                .WithMany(u => u.UserItems)
+                .HasForeignKey(ui => ui.ItemId);
             base.OnModelCreating(builder);
 
-            //builder.Entity<ApplicationUser>()
-            //    .HasMany<Item>(u => u.Items)
-            //    .WithMany(i => i.ApplicationUsers)
-            //    .Map(iu =>
-            //    {
-            //        iu.ToTable("ApplicationUserItem");
-            //        iu.MapLeftKey("ApplicationUserId");
-            //        iu.MapRightKey("ItemId");
-            //    });
         }
         
     }
